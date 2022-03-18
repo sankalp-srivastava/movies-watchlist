@@ -1,0 +1,176 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.banner-card{
+  width: 100vw;
+  border:0px;
+  border-top: 1px solid rgba(0,0,0,.125);
+  margin-bottom: 1.5vh;
+  height: 70vh;
+  /* position: relative; */
+  color: white;
+}
+
+.banner-img{
+  height:70vh;
+  width: 100vw;
+}
+
+.banner-title{
+  position: absolute;
+  top: 46vh;
+  left: 4vw;
+}
+
+.banner-text{
+  position: absolute;
+  top: 55vh;
+  left: 4vw;
+  height: 4.5rem;
+  overflow: hidden;
+  margin-right: 5vw;
+}
+/* style={{height:'40vh',width:'20vw',objectFit: 'cover'}} */
+.movies-img{
+  height: 40vh;
+  width: 20vw;
+  object-fit: cover;
+}
+
+.movies-list{
+  display:flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+  justify-content: center;
+}
+.movies-card{
+  width: 20vw;
+  margin: 1rem;
+  position: relative;
+  color: white;
+
+}
+.movies-title{
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  text-shadow:
+  0.05em 0 black,
+  0 0.05em black,
+  -0.05em 0 black,
+  0 -0.05em black,
+  -0.05em -0.05em black,
+  -0.05em 0.05em black,
+  0.05em -0.05em black,
+  0.05em 0.05em black;
+}
+.movies-button{
+  position: absolute;
+  bottom: 2rem;
+
+}
+
+.favourite-genres{
+  padding: 3rem;
+}
+
+.favourite-table{
+  padding: 3rem;
+  overflow: auto;
+}
+
+.gen-table{
+  cursor: pointer;
+}
+.gen-table:hover{
+  background-color:rgba(71, 65, 59, 0.842);
+  color:white;
+  /* fontWeight:'bold' */
+}
+
+.up{
+  position: relative;
+  top: 0.3rem;
+  padding-right: 0.1rem;
+  cursor: pointer;
+}
+
+.down{
+  position: relative;
+  padding-left: 0.2rem;
+  cursor: pointer;
+}
+footer{
+  position:absolute;
+  bottom: 0px;
+  width: 100vw;
+  background: black;
+  color: white;
+  padding: 9px 20px;
+  text-align: center;
+  font-size: small;
+}
+@media screen and (max-width:450px) {
+  .banner-card{
+    height: 30vh;
+  }
+  .banner-img{
+    height: 30vh;
+  }
+  .banner-title{
+    top:12vh;
+    left:5vw;
+  }
+  .banner-text{
+    top:17vh;
+    left:5vw;
+  }
+  .movies-card{
+    margin: 0.2rem;
+    width: 40vw;
+    height: 35vh;
+    background-color: black;
+  }
+  .movies-button{
+    width: 80%;
+  }
+  .movies-img{
+    width: 40vw;
+  }
+}
