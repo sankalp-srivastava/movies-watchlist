@@ -102,7 +102,19 @@ export default class Movies extends Component {
     }
 
     render() {
-        // let movie = movies.results
+        let genreids = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-fi', 10770: 'TV', 53: 'Thriller', 10752: 'War', 37: 'Western' };
+        let genretvids = { 10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids', 9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western' };
+        let currgen=''
+        let currlang =''
+        if(this.state.currMovie != ''){
+            if(this.state.currMovie.media_type=='tv'){
+                currgen = this.state.currMovie.genre_ids.map((gen)=>genretvids[gen]).toString()
+            }
+            else{
+                currgen = this.state.currMovie.genre_ids.map((gen)=>genreids[gen]).toString()
+            }
+            currlang = (this.state.currMovie.original_language).toUpperCase()
+        }
         return (
             <>
                 {this.state.movies.length == 0 ? <div className="spinner-border text-primary" role="status">
@@ -116,7 +128,7 @@ export default class Movies extends Component {
                                     <div key={movieObj.id} className="card movies-card" onMouseEnter={() => this.setState({ hover: movieObj.id })} onMouseLeave={() => this.setState({ hover: "" })}>
                                         <img src={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`} onClick={() => this.handleShow(movieObj)} alt={movieObj.title} className="card-img-top movies-img" />
                                         {/* <div className="card-body"> */}
-                                        <h5 className="card-title movies-title">{movieObj.media_type == 'tv' ? `${movieObj.original_name} (TV Show)` : `${movieObj.original_title} (Movie)`}</h5>
+                                        <h5 className="card-title movies-title">{movieObj.media_type == 'tv' ? `${movieObj.name} (TV Show)` : `${movieObj.original_title} (Movie)`}</h5>
                                         {/* <p className="card-text movies-text">{movieObj.overview}</p> */}
                                         <div className="button-wrapper" style={{ display: 'flex', width: '100%', justifyContent: "center" }}>
                                             {
@@ -135,28 +147,38 @@ export default class Movies extends Component {
                             aria-labelledby="contained-modal-title-vcenter"
                             centered >
                             <Modal.Header closeButton>
-                                <Modal.Title id="contained-modal-title-vcenter">{this.state.currMovie.media_type == 'tv' ? `${this.state.currMovie.original_name}` : `${this.state.currMovie.original_title}`}</Modal.Title>
+                                <Modal.Title id="contained-modal-title-vcenter">{this.state.currMovie.media_type == 'tv' ? `${this.state.currMovie.name}` : `${this.state.currMovie.original_title}`}</Modal.Title>
                             </Modal.Header>
-                            <Modal.Body style={{padding:'0',paddingLeft:'1rem'}}>
-                                <table class="table table-hover table-bordered" >
+                            <Modal.Body style={{ padding: '0', paddingLeft: '1rem' }}>
+                                <table className="table table-hover table-bordered" >
                                     <tbody className='align-middle'>
                                         <tr >
                                             <th >Title: </th>
-                                            <td >{this.state.currMovie.media_type == 'tv' ? `${this.state.currMovie.original_name}` : `${this.state.currMovie.original_title}`}</td>
-                                            <td  rowSpan='2' style={{width:'33%'}} ><img src={`https://image.tmdb.org/t/p/original${this.state.currMovie.backdrop_path}` }className='modal-cover-image' alt={this.state.currMovie.title} /></td>
+                                            <td >{this.state.currMovie.media_type == 'tv' ? `${this.state.currMovie.name}` : `${this.state.currMovie.original_title}`}</td>
+                                            <td rowSpan='2' style={{ width: '33%' }} ><img src={`https://image.tmdb.org/t/p/original${this.state.currMovie.backdrop_path}`} className='modal-cover-image' alt={this.state.currMovie.title} /></td>
                                         </tr>
                                         <tr>
                                             <th >Media Type: </th>
-                                            <td >{this.state.currMovie.media_type =='tv'? "TV Show":"Movie" }</td>
-                                       
+                                            <td >{this.state.currMovie.media_type == 'tv' ? "TV Show" : "Movie"}</td>
+
+                                        </tr>
+
+                                        <tr >
+                                            <th >Genre: </th>
+                                            <td colSpan='2'>{currgen}
+                                            </td>
                                         </tr>
                                         <tr >
                                             <th >Overview: </th>
                                             <td colSpan='2'>{this.state.currMovie.overview}</td>
                                         </tr>
                                         <tr >
-                                            <th >{this.state.currMovie.media_type=='tv'?"First Air Date: ":"Release Date: "}</th>
-                                            <td colSpan='2'>{this.state.currMovie.media_type=='tv'?this.state.currMovie.first_air_date:this.state.currMovie.release_date}</td>
+                                            <th >Language: </th>
+                                            <td colSpan='2'>{currlang}</td>
+                                        </tr>
+                                        <tr >
+                                            <th >{this.state.currMovie.media_type == 'tv' ? "First Air Date: " : "Release Date: "}</th>
+                                            <td colSpan='2'>{new Date(this.state.currMovie.media_type == 'tv' ? this.state.currMovie.first_air_date : this.state.currMovie.release_date).toLocaleDateString("en-IN", { year: 'numeric', month: 'long', day: 'numeric' })}</td>
                                         </tr>
                                     </tbody>
                                 </table>

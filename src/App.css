@@ -180,6 +180,8 @@ footer{
   }
   .movies-button{
     width: 80%;
+    display: none;
+
   }
   .movies-img{
     width: 40vw;

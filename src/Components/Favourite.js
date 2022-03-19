@@ -38,13 +38,13 @@ export default class Favourite extends Component {
         let temp = this.state.movies;
         temp.sort(function (a, b) {
             if (a.media_type =='tv'){
-                var title1 = a.original_name
+                var title1 = a.name
             }
             else{
                 var title1 = a.original_title
             }
             if (b.media_type =='tv'){
-                var title2 = b.original_name
+                var title2 = b.name
             }
             else{
                 var title2 = b.original_title
@@ -62,13 +62,13 @@ export default class Favourite extends Component {
         let temp = this.state.movies;
         temp.sort(function (a, b) {
             if (a.media_type =='tv'){
-                var title1 = a.original_name
+                var title1 = a.name
             }
             else{
                 var title1 = a.original_title
             }
             if (b.media_type =='tv'){
-                var title2 = b.original_name
+                var title2 = b.name
             }
             else{
                 var title2 = b.original_title
@@ -139,7 +139,7 @@ export default class Favourite extends Component {
         if (this.state.currtext != '') {
             filterarr = filterarr.filter((movieObj) => {
                 if(movieObj.media_type == 'tv'){
-                    var title = movieObj.original_name.toLowerCase();
+                    var title = movieObj.name.toLowerCase();
                 }
                 else{
                     var title = movieObj.original_title.toLowerCase();
@@ -157,7 +157,7 @@ export default class Favourite extends Component {
         filterarr = filterarr.slice(si, ei);
         return (
             <>
-                <div className="main">
+                <div className="main" style={{padding:'1rem'}}>
                     <div className="row">
                         <div className="col-lg-3 col-sm-12">
                             <ul className="list-group favourite-genres">
@@ -194,7 +194,7 @@ export default class Favourite extends Component {
                                         {
                                             filterarr.map((movieObj) => (
                                                 <tr>
-                                                    <th className='col-6' scope="row"><img src={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`} alt={movieObj.media_type == 'tv' ? `${movieObj.original_name} (TV Show)` : `${movieObj.original_title} (Movie)`} style={{ width: '5rem' }} /> {movieObj.media_type == 'tv' ? `${movieObj.original_name} (TV Show)` : `${movieObj.original_title} (Movie)`}</th>
+                                                    <th className='col-6' scope="row"><img src={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`} alt={movieObj.media_type == 'tv' ? `${movieObj.name} (TV Show)` : `${movieObj.original_title} (Movie)`} style={{ width: '5rem' }} /> {movieObj.media_type == 'tv' ? `${movieObj.name} (TV Show)` : `${movieObj.original_title} (Movie)`}</th>
 
                                                     {/* <td className='col'>{movieObj.genre_ids.map((genreid) => {
                                                         return `${genreids[genreid]}, `
