@@ -156,7 +156,13 @@ footer{
   height: 100%;
   /* right: -4rem; */
 }
-
+@media screen and (min-width:451px) {
+.btn-modal-right{
+  position:absolute;
+  right: 3rem;
+}
+  
+}
 @media screen and (max-width:450px) {
   .banner-card{
     height: 30vh;

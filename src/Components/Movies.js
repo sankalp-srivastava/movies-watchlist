@@ -7,14 +7,14 @@ export default class Movies extends Component {
     constructor() {
         super();
         this.state = {
-            hover: "",
             parr: [1],
             currPage: 1,
             movies: [],
             favourites: [],
             show: false,
             currMovie: '',
-            cast: []
+            cast: [],
+            watchproviders:[]
         }
     }
     async componentDidMount() {
@@ -80,7 +80,7 @@ export default class Movies extends Component {
             oldData.push(movie)
         }
         localStorage.setItem('movies', JSON.stringify(oldData));
-        console.log(oldData)
+        // console.log(oldData)
         this.handleFavouriteState();
     }
     handleFavouriteState() {
@@ -93,7 +93,8 @@ export default class Movies extends Component {
     handleClose = () => {
         this.setState({
             show: false,
-            currMovie: ""
+            currMovie: "",
+            watchproviders:[]
         })
     }
     handleShow = (movieObj) => {
@@ -103,13 +104,39 @@ export default class Movies extends Component {
         }, this.getCast)
     }
     getCast = async () => {
-        let url = `https://api.themoviedb.org/3/${this.state.currMovie.media_type}/${this.state.currMovie.id}/credits?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`
+        let url = `https://api.themoviedb.org/3/${this.state.currMovie.media_type}/${this.state.currMovie.id}/credits?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`;
+        let providerurl = `https://api.themoviedb.org/3/${this.state.currMovie.media_type}/${this.state.currMovie.id}/watch/providers?api_key=${process.env.REACT_APP_API_KEY}`
         // console.log(url)
         const res = await axios.get(url)
-        let data = (res.data.cast).slice(0, 24)
+        let data = (res.data.cast)
         // console.log(data)
+        const res1 = await axios.get(providerurl)
+        let provider = res1.data.results.IN;
+        console.log(provider)
+        let newa = []
+        if (provider == null){
+            newa = [null]
+        }
+        else if ('rent' in provider){
+            console.log('rent true')
+            newa = JSON.parse(JSON.stringify(provider['rent']))
+        }
+        else if ('flatrate' in provider){
+            console.log('flatrate true')
+            newa = JSON.parse(JSON.stringify(provider['flatrate']))
+        }
+        else if ('buy' in provider){
+            console.log('buy true')
+            newa = JSON.parse(JSON.stringify(provider['buy']))
+        }
+        else{
+            console.log('else')
+            newa = [null]
+        }
+        // console.log()
         this.setState({
-            cast : [...data]
+            cast : [...data],
+            watchproviders: [...newa]
         })
     }
     render() {
@@ -136,18 +163,12 @@ export default class Movies extends Component {
                             {
                                 this.state.movies.map((movieObj) => (
 
-                                    <div key={movieObj.id} className="card movies-card" onMouseEnter={() => this.setState({ hover: movieObj.id })} onMouseLeave={() => this.setState({ hover: "" })}>
+                                    <div key={movieObj.id} className="card movies-card">
                                         <img src={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`} onClick={() => this.handleShow(movieObj)} alt={movieObj.title} className="card-img-top movies-img" />
                                         {/* <div className="card-body"> */}
                                         <h5 className="card-title movies-title">{movieObj.media_type == 'tv' ? `${movieObj.name} (TV Show)` : `${movieObj.original_title} (Movie)`}</h5>
                                         {/* <p className="card-text movies-text">{movieObj.overview}</p> */}
-                                        <div className="button-wrapper" style={{ display: 'flex', width: '100%', justifyContent: "center" }}>
-                                            {
-                                                this.state.hover == movieObj.id &&
-                                                <a className="btn btn-primary movies-button" onClick={() => this.handleFavourite(movieObj)}>{(this.state.favourites.includes(movieObj.id)) ? "Remove from Favourites" : "Add To Favourites"}</a>
-                                            }
-
-                                        </div>
+                                    
                                         {/* </div> */}
                                     </div>
 
@@ -157,8 +178,13 @@ export default class Movies extends Component {
                         <Modal show={this.state.show} onHide={this.handleClose} size="lg"
                             aria-labelledby="contained-modal-title-vcenter"
                             centered >
-                            <Modal.Header closeButton>
+                            <Modal.Header closeButton >
                                 <Modal.Title id="contained-modal-title-vcenter">{this.state.currMovie.media_type == 'tv' ? `${this.state.currMovie.name}` : `${this.state.currMovie.original_title}`}</Modal.Title>
+                                <br />
+                                <Button variant="primary" onClick={() => this.handleFavourite(this.state.currMovie)} className="btn-modal-right">
+                                    {(this.state.favourites.includes(this.state.currMovie.id)) ? "Remove from Favourites" : "Add To Favourites"}
+
+                                </Button>
                             </Modal.Header>
                             <Modal.Body style={{ padding: '1rem' }}>
                                 <table className="table table-hover table-bordered" >
@@ -191,10 +217,20 @@ export default class Movies extends Component {
                                             <th >{this.state.currMovie.media_type == 'tv' ? "First Air Date: " : "Release Date: "}</th>
                                             <td colSpan='2'>{new Date(this.state.currMovie.media_type == 'tv' ? this.state.currMovie.first_air_date : this.state.currMovie.release_date).toLocaleDateString("en-IN", { year: 'numeric', month: 'long', day: 'numeric' })}</td>
                                         </tr>
+                                        <tr>
+                                            <th>Watch Providers: </th>
+                                            <td colSpan='2'>{this.state.watchproviders[0]==null?"Currently Not Available To Stream In India": this.state.watchproviders.map((obj)=>(<>
+                                                <img src={`https://image.tmdb.org/t/p/w45${obj.logo_path}`} alt={obj.provider_name} title={obj.provider_name} style={{marginLeft:'0.3rem',marginRight:'0.3rem'}} />
+                                                <small>{obj.provider_name}</small>
+                                                </>
+                                            ))}</td>
+                                        </tr>
                                     </tbody>
                                 </table>
+                                <div >
                                 <h3>Cast : </h3>
-                                <Row xs={2} md={3} lg={4} className="g-4">
+                                
+                                <Row xs={2} md={3} lg={4} className="g-4" style={{marginTop:'0.1rem',height:'62vh',overflowY:'scroll'}}>
                                     {this.state.cast.map((castx) => (
                                         <Col key={castx.order}>
                                             <Card>
@@ -209,7 +245,8 @@ export default class Movies extends Component {
                                         </Col>
                                     ))}
                                 </Row>
-
+                                
+                                </div>
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={this.handleClose}>
