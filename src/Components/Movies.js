@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios';
-import { Modal, Button } from 'react-bootstrap'
+import default_dp from '../default_dp.jpg'
+import { Modal, Button, Card, Row, Col } from 'react-bootstrap'
 
 export default class Movies extends Component {
     constructor() {
@@ -12,7 +13,8 @@ export default class Movies extends Component {
             movies: [],
             favourites: [],
             show: false,
-            currMovie: ''
+            currMovie: '',
+            cast: []
         }
     }
     async componentDidMount() {
@@ -32,8 +34,8 @@ export default class Movies extends Component {
     changeMovies = async () => {
         const res = await axios.get(`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=${this.state.currPage}`)
         let data = res.data
-        console.log(data)
-        console.log(res)
+        // console.log(data)
+        // console.log(res)
         this.setState({
             movies: [...data.results]
         })
@@ -98,20 +100,29 @@ export default class Movies extends Component {
         this.setState({
             show: true,
             currMovie: movieObj
+        }, this.getCast)
+    }
+    getCast = async () => {
+        let url = `https://api.themoviedb.org/3/${this.state.currMovie.media_type}/${this.state.currMovie.id}/credits?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`
+        // console.log(url)
+        const res = await axios.get(url)
+        let data = (res.data.cast).slice(0, 24)
+        // console.log(data)
+        this.setState({
+            cast : [...data]
         })
     }
-
     render() {
         let genreids = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-fi', 10770: 'TV', 53: 'Thriller', 10752: 'War', 37: 'Western' };
         let genretvids = { 10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids', 9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western' };
-        let currgen=''
-        let currlang =''
-        if(this.state.currMovie != ''){
-            if(this.state.currMovie.media_type=='tv'){
-                currgen = this.state.currMovie.genre_ids.map((gen)=>genretvids[gen]).toString()
+        let currgen = ''
+        let currlang = ''
+        if (this.state.currMovie != '') {
+            if (this.state.currMovie.media_type == 'tv') {
+                currgen = this.state.currMovie.genre_ids.map((gen) => genretvids[gen]).toString()
             }
-            else{
-                currgen = this.state.currMovie.genre_ids.map((gen)=>genreids[gen]).toString()
+            else {
+                currgen = this.state.currMovie.genre_ids.map((gen) => genreids[gen]).toString()
             }
             currlang = (this.state.currMovie.original_language).toUpperCase()
         }
@@ -149,7 +160,7 @@ export default class Movies extends Component {
                             <Modal.Header closeButton>
                                 <Modal.Title id="contained-modal-title-vcenter">{this.state.currMovie.media_type == 'tv' ? `${this.state.currMovie.name}` : `${this.state.currMovie.original_title}`}</Modal.Title>
                             </Modal.Header>
-                            <Modal.Body style={{ padding: '0', paddingLeft: '1rem' }}>
+                            <Modal.Body style={{ padding: '1rem' }}>
                                 <table className="table table-hover table-bordered" >
                                     <tbody className='align-middle'>
                                         <tr >
@@ -182,12 +193,22 @@ export default class Movies extends Component {
                                         </tr>
                                     </tbody>
                                 </table>
-
-
-
-
-
-
+                                <h3>Cast : </h3>
+                                <Row xs={2} md={3} lg={4} className="g-4">
+                                    {this.state.cast.map((castx) => (
+                                        <Col key={castx.order}>
+                                            <Card>
+                                                <Card.Img variant="top" src={castx.profile_path==null?default_dp: `https://image.tmdb.org/t/p/w154/${castx.profile_path}` } />
+                                                <Card.Body>
+                                                    <Card.Title>{castx.name}</Card.Title>
+                                                    <Card.Text>
+                                                        {castx.character}
+                                                    </Card.Text>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    ))}
+                                </Row>
 
                             </Modal.Body>
                             <Modal.Footer>
