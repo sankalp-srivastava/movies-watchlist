@@ -37,7 +37,19 @@ export default class Favourite extends Component {
     sortTitleAsc = () => {
         let temp = this.state.movies;
         temp.sort(function (a, b) {
-            if (a.original_title.toLowerCase() > b.original_title.toLowerCase())
+            if (a.media_type =='tv'){
+                var title1 = a.original_name
+            }
+            else{
+                var title1 = a.original_title
+            }
+            if (b.media_type =='tv'){
+                var title2 = b.original_name
+            }
+            else{
+                var title2 = b.original_title
+            }
+            if (title1.toLowerCase() > title2.toLowerCase())
                 return -1
             else
                 return 1
@@ -49,7 +61,19 @@ export default class Favourite extends Component {
     sortTitleDesc = () => {
         let temp = this.state.movies;
         temp.sort(function (a, b) {
-            if (a.original_title.toLowerCase() > b.original_title.toLowerCase())
+            if (a.media_type =='tv'){
+                var title1 = a.original_name
+            }
+            else{
+                var title1 = a.original_title
+            }
+            if (b.media_type =='tv'){
+                var title2 = b.original_name
+            }
+            else{
+                var title2 = b.original_title
+            }
+            if (title1.toLowerCase() > title2.toLowerCase())
                 return 1
             else
                 return -1
@@ -87,10 +111,11 @@ export default class Favourite extends Component {
         let newarr = this.state.movies.filter((movieObj)=> movieObj.id != id)
         localStorage.setItem('movies',JSON.stringify(newarr))
         let genreids = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-fi', 10770: 'TV', 53: 'Thriller', 10752: 'War', 37: 'Western' };
+        let genretvids = {10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids', 9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western'};
         let temp = [];
         newarr.forEach((movieObj) => {
-            if (!temp.includes(genreids[movieObj.genre_ids[0]])) {
-                temp.push(genreids[movieObj.genre_ids[0]])
+            if (movieObj.media_type == 'tv' ? !temp.includes(genretvids[movieObj.genre_ids[0]]):!temp.includes(genreids[movieObj.genre_ids[0]])) {
+                temp.push(movieObj.media_type == 'tv' ? (genretvids[movieObj.genre_ids[0]]):(genreids[movieObj.genre_ids[0]]))
             }
         })
         temp.sort();
@@ -103,16 +128,22 @@ export default class Favourite extends Component {
     }
     render() {
         let genreids = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-fi', 10770: 'TV', 53: 'Thriller', 10752: 'War', 37: 'Western' };
+        let genretvids = {10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids', 9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western'};
         let filterarr = []
         if (this.state.currgen == 'All Genres') {
             filterarr = this.state.movies
         } else {
-            filterarr = this.state.movies.filter((movieObj) => genreids[movieObj.genre_ids[0]] == this.state.currgen)
+            filterarr = this.state.movies.filter((movieObj) => movieObj.media_type == 'tv' ? genretvids[movieObj.genre_ids[0]] == this.state.currgen: genreids[movieObj.genre_ids[0]] == this.state.currgen)
         }
 
         if (this.state.currtext != '') {
             filterarr = filterarr.filter((movieObj) => {
-                let title = movieObj.original_title.toLowerCase();
+                if(movieObj.media_type == 'tv'){
+                    var title = movieObj.original_name.toLowerCase();
+                }
+                else{
+                    var title = movieObj.original_title.toLowerCase();
+                }
                 return title.includes(this.state.currtext.toLowerCase())
             })
         }
@@ -163,12 +194,12 @@ export default class Favourite extends Component {
                                         {
                                             filterarr.map((movieObj) => (
                                                 <tr>
-                                                    <th className='col-6' scope="row"><img src={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`} alt={movieObj.title} style={{ width: '5rem' }} /> {movieObj.title}</th>
+                                                    <th className='col-6' scope="row"><img src={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`} alt={movieObj.media_type == 'tv' ? `${movieObj.original_name} (TV Show)` : `${movieObj.original_title} (Movie)`} style={{ width: '5rem' }} /> {movieObj.media_type == 'tv' ? `${movieObj.original_name} (TV Show)` : `${movieObj.original_title} (Movie)`}</th>
 
                                                     {/* <td className='col'>{movieObj.genre_ids.map((genreid) => {
                                                         return `${genreids[genreid]}, `
                                                     })}</td> */}
-                                                    <td className='col'>{genreids[movieObj.genre_ids[0]]}</td>
+                                                    <td className='col'>{movieObj.media_type == 'tv' ? genretvids[movieObj.genre_ids[0]]: genreids[movieObj.genre_ids[0]]}</td>
                                                     <td className='col-1'>{movieObj.popularity}</td>
                                                     <td className='col-2 text-center'>{movieObj.vote_average}</td>
                                                     <td className='col-1'><button type="button" className="btn btn-danger" onClick={()=>this.handleDelete(movieObj.id)}>Remove</button></td>
