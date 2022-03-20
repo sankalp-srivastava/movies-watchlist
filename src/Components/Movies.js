@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ReactStars from "react-rating-stars-component";
 import axios from 'axios';
 import default_dp from '../default_dp.jpg'
 import { Modal, Button, Card, Row, Col } from 'react-bootstrap'
@@ -14,7 +15,7 @@ export default class Movies extends Component {
             show: false,
             currMovie: '',
             cast: [],
-            watchproviders:[]
+            watchproviders: []
         }
     }
     async componentDidMount() {
@@ -94,7 +95,7 @@ export default class Movies extends Component {
         this.setState({
             show: false,
             currMovie: "",
-            watchproviders:[]
+            watchproviders: []
         })
     }
     handleShow = (movieObj) => {
@@ -114,28 +115,28 @@ export default class Movies extends Component {
         let provider = res1.data.results.IN;
         console.log(provider)
         let newa = []
-        if (provider == null){
+        if (provider == null) {
             newa = [null]
         }
-        else if ('rent' in provider){
+        else if ('rent' in provider) {
             console.log('rent true')
             newa = JSON.parse(JSON.stringify(provider['rent']))
         }
-        else if ('flatrate' in provider){
+        else if ('flatrate' in provider) {
             console.log('flatrate true')
             newa = JSON.parse(JSON.stringify(provider['flatrate']))
         }
-        else if ('buy' in provider){
+        else if ('buy' in provider) {
             console.log('buy true')
             newa = JSON.parse(JSON.stringify(provider['buy']))
         }
-        else{
+        else {
             console.log('else')
             newa = [null]
         }
         // console.log()
         this.setState({
-            cast : [...data],
+            cast: [...data],
             watchproviders: [...newa]
         })
     }
@@ -154,7 +155,7 @@ export default class Movies extends Component {
             currlang = (this.state.currMovie.original_language).toUpperCase()
         }
         return (
-            <>
+            <div style={{marginTop:'-28px'}}>
                 {this.state.movies.length == 0 ? <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span></div> :
                     <div >
@@ -168,7 +169,7 @@ export default class Movies extends Component {
                                         {/* <div className="card-body"> */}
                                         <h5 className="card-title movies-title">{movieObj.media_type == 'tv' ? `${movieObj.name} (TV Show)` : `${movieObj.original_title} (Movie)`}</h5>
                                         {/* <p className="card-text movies-text">{movieObj.overview}</p> */}
-                                    
+
                                         {/* </div> */}
                                     </div>
 
@@ -207,7 +208,20 @@ export default class Movies extends Component {
                                         </tr>
                                         <tr >
                                             <th >Overview: </th>
-                                            <td colSpan='2'>{this.state.currMovie.overview}</td>
+                                            <td colSpan='2' >{this.state.currMovie.overview}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                Rating:
+                                            </th>
+                                            <td colSpan='3' style={{display:'flex'}}> <ReactStars 
+                                                count={5}
+                                                size={20}
+                                                edit={false}
+                                                value={Math.round(this.state.currMovie.vote_average)/2}
+                                                isHalf={true}
+                                                activeColor="#ffd700"
+                                            /> <div style={{marginLeft: '0.4rem', marginTop: '0.2rem'}}>({Math.round(this.state.currMovie.vote_average)/2})</div> </td>
                                         </tr>
                                         <tr >
                                             <th >Language: </th>
@@ -219,33 +233,33 @@ export default class Movies extends Component {
                                         </tr>
                                         <tr>
                                             <th>Watch Providers: </th>
-                                            <td colSpan='2'>{this.state.watchproviders[0]==null?"Currently Not Available To Stream In India": this.state.watchproviders.map((obj)=>(<>
-                                                <img src={`https://image.tmdb.org/t/p/w45${obj.logo_path}`} alt={obj.provider_name} title={obj.provider_name} style={{marginLeft:'0.3rem',marginRight:'0.3rem'}} />
+                                            <td colSpan='2'>{this.state.watchproviders[0] == null ? "Currently Not Available To Stream In India" : this.state.watchproviders.map((obj) => (<>
+                                                <img src={`https://image.tmdb.org/t/p/w45${obj.logo_path}`} alt={obj.provider_name} title={obj.provider_name} style={{ marginLeft: '0.3rem', marginRight: '0.3rem' }} />
                                                 <small>{obj.provider_name}</small>
-                                                </>
+                                            </>
                                             ))}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <div >
-                                <h3>Cast : </h3>
-                                
-                                <Row xs={2} md={3} lg={4} className="g-4" style={{marginTop:'0.1rem',height:'62vh',overflowY:'scroll'}}>
-                                    {this.state.cast.map((castx) => (
-                                        <Col key={castx.order}>
-                                            <Card>
-                                                <Card.Img variant="top" src={castx.profile_path==null?default_dp: `https://image.tmdb.org/t/p/w154/${castx.profile_path}` } />
-                                                <Card.Body>
-                                                    <Card.Title>{castx.name}</Card.Title>
-                                                    <Card.Text>
-                                                        {castx.character}
-                                                    </Card.Text>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                    ))}
-                                </Row>
-                                
+                                    <h3>Cast : </h3>
+
+                                    <Row xs={2} md={3} lg={4} className="g-4" style={{ marginTop: '0.1rem', height: '62vh', overflowY: 'scroll' }}>
+                                        {this.state.cast.map((castx) => (
+                                            <Col key={castx.order}>
+                                                <Card>
+                                                    <Card.Img variant="top" src={castx.profile_path == null ? default_dp : `https://image.tmdb.org/t/p/w154/${castx.profile_path}`} />
+                                                    <Card.Body>
+                                                        <Card.Title>{castx.name}</Card.Title>
+                                                        <Card.Text>
+                                                            {castx.character}
+                                                        </Card.Text>
+                                                    </Card.Body>
+                                                </Card>
+                                            </Col>
+                                        ))}
+                                    </Row>
+
                                 </div>
                             </Modal.Body>
                             <Modal.Footer>
@@ -272,7 +286,7 @@ export default class Movies extends Component {
                     </div>
                 }
 
-            </>
+            </div>
         )
     }
 }
