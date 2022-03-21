@@ -86,7 +86,7 @@ export default class Favourite extends Component {
     sortRatingDesc = () => {
         let temp = this.state.movies;
         temp.sort(function (a, b) {
-            return b.popularity - a.popularity
+            return b.vote_average - a.vote_average
         })
         this.setState({
             movies: [...temp]
@@ -96,7 +96,7 @@ export default class Favourite extends Component {
     sortRatingAsc = () => {
         let temp = this.state.movies;
         temp.sort(function (a, b) {
-            return a.popularity - b.popularity
+            return a.vote_average - b.vote_average
         })
         this.setState({
             movies: [...temp]

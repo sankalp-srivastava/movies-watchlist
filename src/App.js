@@ -4,9 +4,9 @@ import Navbar from './Components/Navbar';
 import Banner from './Components/Banner';
 import Movies from './Components/Movies';
 import Favourite from './Components/Favourite';
-// import Info from './Components/Info';
+import Error404 from './Components/Error404';
 import About from './Components/About';
-import{BrowserRouter as Router,Routes,Route,Outlet} from 'react-router-dom'
+import{BrowserRouter as Router,Routes,Route} from 'react-router-dom'
 
 function App() {
   return (
@@ -17,6 +17,8 @@ function App() {
  <Route path='/' element={<><Banner/><Movies/></>}/>
  <Route path='/favourites' element={<Favourite/>}/>
  <Route path='/about' element={<About/>}/>
+ <Route path='/*' element={<Error404/>}/>
+
  </Routes>
  {/* <Banner/>
  <Movies/>
