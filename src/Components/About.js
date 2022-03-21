@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 export default class About extends Component {
   render() {
     return (<div className='my-container'>
-      <div className="bgimage"></div>
+      <div className="bgimage" style={{filter:'blur(12px)'}}></div>
       <div className='aboutpage '>
         <h1 className='shadow1' style={{ textAlign: 'center', color: 'white', paddingTop: '1rem' }}>Movies Watchlist</h1>
         <h4 className="shadow1">
