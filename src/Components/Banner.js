@@ -38,7 +38,7 @@ export default class Banner extends Component {
                         <div className="slideshowslider " style={{ transform: `translate3d(${-this.state.index * 100}%, 0, 0)` }}>
                             {this.state.movie.map((mov, index) => (<div className=" card banner-card slide " key={index}>
                                 <img src={`https://image.tmdb.org/t/p/original${mov.backdrop_path}`} alt={mov.title} className="card-img-top banner-img" style={{ objectFit: 'cover' }} />
-                                <h1 className="card-title banner-title">{mov.original_title}</h1>
+                                <h1 className="card-title banner-title">{mov.media_type == 'tv' ? mov.name : mov.original_title}</h1>
                                 <p className="card-text banner-text">{mov.overview}</p></div>))}
                         </div>
                         <div className="slideshowDots">
