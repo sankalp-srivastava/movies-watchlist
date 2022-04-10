@@ -1,0 +1,182 @@
+.banner-card {
+    width: 100vw;
+    border: 0px;
+    margin-bottom: 1.5vh;
+    height: 70vh;
+    /* position: relative; */
+    color: white;
+}
+
+.banner-img {
+    height: 70vh;
+    width: 100vw;
+}
+
+.banner-title {
+    position: absolute;
+    top: 46vh;
+    left: 4vw;
+    text-shadow:
+        0.05em 0 black,
+        0 0.05em black,
+        -0.05em 0 black,
+        0 -0.05em black,
+        -0.05em -0.05em black,
+        -0.05em 0.05em black,
+        0.05em -0.05em black,
+        0.05em 0.05em black;
+}
+
+.slideshow {
+    margin: 0 auto;
+    overflow: hidden;
+
+}
+
+.slideshowDot.active {
+    background-color: #ffffff;
+    border: 2px solid white;
+}
+
+.slideshowslider {
+    white-space: nowrap;
+    transition: ease 1230ms;
+}
+
+.slide {
+    display: inline-block !important;
+    max-width: 100%;
+}
+
+.slideshowDots {
+    text-align: center;
+}
+
+.slideshowDot {
+    display: inline-block;
+    height: 0.7rem;
+    width: 0.7rem;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0.6rem 0.25rem;
+    background-color: rgba(255, 255, 255, 0.7);
+    position: relative;
+    bottom: 3rem;
+    border: 1px solid rgb(92, 89, 89);
+}
+
+.banner-text {
+    position: absolute;
+    top: 55vh;
+    left: 4vw;
+    height: 4.5rem;
+    overflow: hidden;
+    margin-right: 5vw;
+    word-break: normal;
+    white-space: normal;
+    text-shadow:
+        0.05em 0 black,
+        0 0.05em black,
+        -0.05em 0 black,
+        0 -0.05em black,
+        -0.05em -0.05em black,
+        -0.05em 0.05em black,
+        0.05em -0.05em black,
+        0.05em 0.05em black;
+}
+
+
+.my-container {
+    height: 89vh;
+    overflow-x: hidden;
+    word-break: normal;
+    white-space: normal;
+
+}
+
+.bgimage {
+    position: fixed;
+    left: 0;
+    top: 0;
+    min-height: 100%;
+    min-width: 100%;
+    z-index: -1;
+    background: url('https://wallpaperaccess.com/full/3949076.jpg') no-repeat center center fixed;
+    background-size: 100%;
+    height: 100%;
+    width: 100vw;
+    background-size: cover;
+    filter: blur(12 px);
+    opacity: 0.95;
+
+
+}
+
+.aboutpage {
+    width: 100vw;
+    height: 90vh;
+    padding: 1rem;
+
+    /* opacity: 0.7; */
+    color: white;
+
+}
+
+.badges {
+    margin: 1rem;
+    border-radius: 17px;
+}
+
+.aboutpage > dl {
+    padding: 1rem;
+}
+
+.shadow1 {
+    text-shadow:
+        0.05em 0 black,
+        0 0.05em black,
+        -0.05em 0 black,
+        0 -0.05em black,
+        -0.05em -0.05em black,
+        -0.05em 0.05em black,
+        0.05em -0.05em black,
+        0.05em 0.05em black;
+}
+
+
+@media screen and (max-width:450px) {
+    .banner-card {
+        height: 30vh;
+    }
+
+    .banner-img {
+        height: 30vh;
+    }
+
+    .banner-title {
+        top: 12vh;
+        left: 5vw;
+    }
+
+    .banner-text {
+        top: 17vh;
+        left: 5vw;
+    }
+
+    .movies-card {
+        margin: 0.2rem;
+        width: 40vw;
+        height: 35vh;
+        background-color: black;
+    }
+
+    .movies-button {
+        width: 80%;
+        display: none;
+
+    }
+
+    .movies-img {
+        width: 40vw;
+    }
+}
