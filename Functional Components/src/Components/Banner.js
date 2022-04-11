@@ -46,7 +46,7 @@ export default function Banner() {
       });
   return (
           <>
-          {movie == null?<CircularProgress/>:
+          {movie == null?<div style={{width:'100%',textAlign:'center'}}><CircularProgress/></div>:
        <>
 
        <div className="slideshow" >
