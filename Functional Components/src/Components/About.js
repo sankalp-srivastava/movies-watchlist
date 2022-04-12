@@ -21,7 +21,7 @@ export default function About() {
       <ul className="shadow1">
         <li>React</li>
         <li>React Router DOM</li>
-        <li>React Bootstrap</li>
+        <li>Material UI</li>
         <li>Bootstrap 5</li>
         <li>Axois</li>
         <li>React Rating Star Component</li>

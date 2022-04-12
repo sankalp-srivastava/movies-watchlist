@@ -28,6 +28,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { styled } from '@mui/material/styles';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import ReactStars from "react-rating-stars-component";
+import Badge from '@mui/material/Badge';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -79,29 +82,57 @@ const BpCheckedIcon = styled(BpIcon)({
     },
 });
 
-
+const StyledBadge = styled(Badge)({
+    "& .MuiBadge-badge": {
+      color: "white",
+      padding: "0.4rem",
+      fontSize: "0.9rem",
+      top:'1.2rem',
+      right:'1.5rem',
+      textShadow:"\
+      0.05em 0 black,\
+      0 0.05em black,\
+      -0.05em 0 black,\
+      0 -0.05em black,\
+      -0.05em -0.05em black,\
+      -0.05em 0.05em black,\
+      0.05em -0.05em black,\
+      0.05em 0.05em black"
+    
+    }
+  });
 export default function Body() {
     const theme = createTheme();
     const [open, setOpen] = React.useState(false);
+    const [open2, setOpen2] = React.useState(false);
     const myRef = useRef(null)
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
     const [currentTab, setCurrentTab] = useState(0);
-    const [clearAll,setClearAll] =useState(false)
     const [currPage, setCurrPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [movies, setMovies] = useState(null);
-    const [dialogCheckBox,setDialogCheckBox] = useState([]);
-    const [filerGenre,setFilterGenre] = useState([]);
+    const [dialogCheckBox, setDialogCheckBox] = useState([]);
+    const [filterGenre, setFilterGenre] = useState([]);
+    const [modalObj, setModalObj] = useState(null);
+    const [mediaType,setMediaType] = useState(null);
+    const [trailer ,setTrailer] = useState(null);
 
-    let genreTreIds = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror',10762: 'Kids', 10402: 'Music', 9648: 'Mystery',10763: 'News',10764: 'Reality', 10749: 'Romance', 878: 'Sci-fi', 10766: 'Soap',10767: 'Talk', 53: 'Thriller',10770: 'TV', 10752: 'War', 37: 'Western' };
     let genreMovIds = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-fi', 10770: 'TV', 53: 'Thriller', 10752: 'War', 37: 'Western' };
     let genreTvIds = { 10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids', 9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western' };
     const handleClickOpen = () => {
         setOpen(true);
     };
+    const handleClickOpen2 = () => {
+        setOpen2(true);
+    };
 
     const handleClose = () => {
         setOpen(false);
+    };
+    const handleClose2 = () => {
+        setOpen2(false);
+        setModalObj(null)
+        setTrailer(null)
     };
 
     useEffect(() => {
@@ -111,18 +142,18 @@ export default function Body() {
                 apiLink = (`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}`)
             }
             else if (currentTab == 1) {
-                apiLink = (`https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}`)
+                apiLink = (`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}&with_genres=${filterGenre.join(",")}`)
             }
             else {
-                apiLink = (`https://api.themoviedb.org/3/trending/tv/week?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}`)
+                apiLink = (`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}&with_genres=${filterGenre.join(",")}`)
             }
             const res = await axios.get(apiLink)
             let data = res.data.results
-            await setTotalPages(res.data.total_pages)
+            await setTotalPages(Math.min(res.data.total_pages,100))
             await setMovies([...data])
         }
         getMovies();
-    }, [currentTab, currPage])
+    }, [currentTab, currPage, filterGenre])
 
     useEffect(() => {
         myRef.current.scrollIntoView({
@@ -130,22 +161,46 @@ export default function Body() {
         })
     }, [currPage])
 
-    const handleAddDialog = async(e) =>{
-        if (!e.target.checked){
-            let parr=[]
-            parr = dialogCheckBox.filter((element) => e.target.name!=element )
+    const handleAddDialog = async (e) => {
+        if (!e.target.checked) {
+            let parr = []
+            parr = dialogCheckBox.filter((element) => e.target.name != element)
             await setDialogCheckBox([...parr])
 
-        }else{
-            await setDialogCheckBox([...dialogCheckBox,e.target.name])
+        } else {
+            await setDialogCheckBox([...dialogCheckBox, e.target.name])
         }
     }
 
-
-    
-
-    const handleClearAll = ()=>{
+    const handleClearAll = () => {
         setDialogCheckBox([])
+    }
+
+    const handleFiltergenre = () => {
+        setFilterGenre([...dialogCheckBox])
+        handleClose();
+    }
+
+    const showInfoModal = async (Obj) => {
+        handleClickOpen2();
+        let link =""
+        if ((currentTab==0 && Obj.media_type=='tv')|| currentTab==2){
+            link = `https://api.themoviedb.org/3/tv/${Obj.id}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos`
+            await setMediaType('tv')
+        }else{
+            link = `https://api.themoviedb.org/3/movie/${Obj.id}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos`
+            await setMediaType('movie')
+        }
+        let res = await axios.get(link)
+        let data = res.data
+        await setModalObj(data)
+        setTrailer((data.videos.results.filter(e=>e.type=="Trailer")[0]).key)
+       
+    }
+
+    const openTrailer = ()=>{
+        let win = window.open(`https://www.youtube.com/watch?v=${trailer}`)
+        win.focus();
     }
 
     const swipeHandlers = useSwipeable({
@@ -184,7 +239,7 @@ export default function Body() {
                 <Tab icon={<img className="tabIcons" src={TvshowIcon} alt="" />} iconPosition="start" label="Popular TV Series" />
             </Tabs>
             <div style={{ display: 'flex', justifyContent: 'right', marginRight: '2rem', marginTop: '0.5rem' }}>
-                <Button variant="contained" startIcon={<FilterListIcon />} onClick={handleClickOpen} >Filter</Button>
+                <Button variant="contained" startIcon={<FilterListIcon />} onClick={handleClickOpen} style={currentTab == 0 ? { display: 'none' } : {}}>Filter</Button>
                 <Dialog
                     open={open}
                     maxWidth={"lg"}
@@ -201,9 +256,9 @@ export default function Body() {
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-slide-description">
-                            
-            <div style={{ display: 'flex', justifyContent: 'left', marginTop: '0.5rem',marginBottom:'0.5rem' }}>
-                <Button variant="contained" startIcon={<CheckBoxOutlineBlankIcon />} onClick={handleClearAll}>Clear All</Button></div>
+
+                            <div style={{ display: 'flex', justifyContent: 'left', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+                                <Button variant="contained" startIcon={<CheckBoxOutlineBlankIcon />} onClick={handleClearAll}>Clear All</Button></div>
 
                             <FormGroup>
                                 <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} direction="row" alignItems="center">
@@ -211,17 +266,12 @@ export default function Body() {
                                         currentTab == 2 ? Object.keys(genreTvIds).map((key, index) => (
                                             <Grid item xs={6} md={4} key={index} >
                                                 <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} color="default"
-                                                    checkedIcon={<BpCheckedIcon />} icon={<BpIcon />} name = {key} onClick={(e)=>handleAddDialog(e)} checked={dialogCheckBox.includes(key)}/>} label={genreTvIds[key]} />
+                                                    checkedIcon={<BpCheckedIcon />} icon={<BpIcon />} name={key} onClick={(e) => handleAddDialog(e)} checked={dialogCheckBox.includes(key)} />} label={genreTvIds[key]} />
                                             </Grid>
-                                        )) : currentTab == 1 ? Object.keys(genreMovIds).map((key, index) => (
+                                        )) : Object.keys(genreMovIds).map((key, index) => (
                                             <Grid item xs={6} md={4} key={index}>
                                                 <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} color="default"
-                                                    checkedIcon={<BpCheckedIcon />} icon={<BpIcon />} name = {key} onClick={(e)=>handleAddDialog(e)} checked={dialogCheckBox.includes(key)} />}  label={genreMovIds[key]}  />
-                                            </Grid>
-                                        )) : Object.keys(genreTreIds).map((key,index)=>(
-                                            <Grid item xs={6} md={4} key={index}>
-                                                <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} color="default"
-                                                    checkedIcon={<BpCheckedIcon />} icon={<BpIcon />} name = {key} onClick={(e)=>handleAddDialog(e)} checked={dialogCheckBox.includes(key)} />} label={genreTreIds[key]}  />
+                                                    checkedIcon={<BpCheckedIcon />} icon={<BpIcon />} name={key} onClick={(e) => handleAddDialog(e)} checked={dialogCheckBox.includes(key)} />} label={genreMovIds[key]} />
                                             </Grid>
                                         ))
                                     }
@@ -230,8 +280,8 @@ export default function Body() {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button variant="contained" onClick={()=>{handleClearAll(); handleClose();}}>Cancel</Button>
-                        <Button variant="contained" onClick={handleClose}>Apply Filter</Button>
+                        <Button variant="contained" onClick={() => { handleClearAll(); handleClose(); }}>Cancel</Button>
+                        <Button variant="contained" onClick={handleFiltergenre}>Apply Filter</Button>
                     </DialogActions>
                 </Dialog>
             </div>
@@ -241,24 +291,102 @@ export default function Body() {
                         <div className="show-movies" {...swipeHandlers}>
                             <ThemeProvider theme={theme}>
                                 {
-                                    movies.map((movieObj, index) => (
-                                        <Card sx={matches ? { width: 250, margin: '0.7rem' } : { width: 165, margin: '0.4rem' }} key={movieObj.id} >
-                                            <CardActionArea>
-                                                <CardMedia
-                                                    height="300"
-                                                    width="100%"
-                                                    component="img"
-                                                    image={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`}
-                                                />
-                                                <Typography variant='h5' className='movies-title' component="div">
-                                                    {movieObj.media_type == 'tv' ? `${movieObj.name}` : `${movieObj.title}`}
-                                                </Typography>
+                                    movies.map((movieObj) => (
+                                                <StyledBadge badgeContent={movieObj.vote_average?movieObj.vote_average:"N/A"} color={movieObj.vote_average?movieObj.vote_average>4?movieObj.vote_average>8?"success":"warning":"error":"error"} key={movieObj.id}>
+                                        <Card sx={matches ? { width: 250, margin: '0.7rem' } : { width: 165, margin: '0.4rem' }}  >
+                                                <CardActionArea onClick={() => showInfoModal(movieObj)} style={{ bottom: '0rem', right: '0rem' }}>
+                                                    <CardMedia
+                                                        height="300"
+                                                        width="100%"
+                                                        component="img"
 
-                                            </CardActionArea>
-                                        </Card>
+                                                        image={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`}
+                                                    />
+                                                    <Typography variant='h5' className='movies-title' component="div">
+                                                        {currentTab == 0 ? movieObj.media_type == 'tv' ? `${movieObj.name}` : `${movieObj.title}` : currentTab == 1 ? movieObj.title : movieObj.name}
+                                                    </Typography>
+
+                                                </CardActionArea>
+                                            </Card>
+                                        </StyledBadge>
                                     ))
                                 }
                             </ThemeProvider>
+                            <Dialog
+                                open={open2}
+                                maxWidth={"lg"}
+                                TransitionComponent={Transition}
+                                scroll={"paper"}
+                                onClose={handleClose2}
+                            >
+                                <DialogTitle>  <Grid container justifyContent="space-between" alignItems="center">
+                                    <Typography variant='h5' component="div" sx={{ maxWidth: '80%' }}>
+                                        {modalObj != null ? mediaType == 'tv' ? `${modalObj.name}` : `${modalObj.title}` : "Loading..."}
+                                    </Typography>
+                                    <CloseIcon onClick={handleClose2} style={{ cursor: 'pointer' }} />
+                                </Grid>
+                                </DialogTitle>
+                                <DialogContent>
+                                    {modalObj != null ?
+                                        <table className="table table-hover table-bordered" >
+                                            <tbody className='align-middle'>
+                                                <tr >
+                                                    <th >Title: </th>
+                                                    <td >{mediaType == 'tv' ? `${modalObj.name}` : `${modalObj.original_title}`}</td>
+                                                    <td rowSpan='2' style={{ width: '33%' }} ><img src={`https://image.tmdb.org/t/p/original${modalObj.backdrop_path}`} className='modal-cover-image' alt={modalObj.title} /></td>
+                                                </tr>
+                                                <tr>
+                                                    <th >Media Type: </th>
+                                                    <td >{mediaType == 'tv' ? "TV Show" : "Movie"}</td>
+
+                                                </tr>
+
+                                                <tr >
+                                                    <th >Genre: </th>
+                                                    <td colSpan='2'>{[...modalObj.genres.map(e=>e.name)].join(",")}
+                                                    </td>
+                                                </tr>
+                                                <tr >
+                                                    <th >Overview: </th>
+                                                    <td colSpan='2' >{modalObj.overview}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>
+                                                        Rating:
+                                                    </th>
+                                                    <td colSpan='3' style={{ display: 'flex' }}> <ReactStars
+                                                        count={5}
+                                                        size={20}
+                                                        edit={false}
+                                                        value={Math.round(modalObj.vote_average) / 2}
+                                                        isHalf={true}
+                                                        activeColor="#ffd700"
+                                                    /> <div style={{ marginLeft: '0.4rem', marginTop: '0.2rem' }}>{modalObj.vote_average}</div> </td>
+                                                </tr>
+                                                <tr >
+                                                    <th >Language: </th>
+                                                    <td colSpan='2'>{(modalObj.original_language).toUpperCase()}</td>
+                                                </tr>
+                                                <tr >
+                                                    <th >{mediaType == 'tv' ? "First Air Date: " : "Release Date: "}</th>
+                                                    <td colSpan='2'>{new Date(mediaType == 'tv' ? modalObj.first_air_date : modalObj.release_date).toLocaleDateString("en-IN", { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                                                </tr>
+                                                {/* <tr>
+                                                <th>Watch Providers: </th>
+                                                <td colSpan='2'>{this.state.watchproviders[0] == null ? "Currently Not Available To Stream In India" : this.state.watchproviders.map((obj) => (<>
+                                                    <img src={`https://image.tmdb.org/t/p/w45${obj.logo_path}`} alt={obj.provider_name} title={obj.provider_name} style={{ marginLeft: '0.3rem', marginRight: '0.3rem' }} />
+                                                    <small>{obj.provider_name}</small>
+                                                </>
+                                                ))}</td>
+                                            </tr> */}
+                                            </tbody>
+                                        </table> : <CircularProgress />
+                                    }
+                                </DialogContent>
+                                <DialogActions sx={{paddingTop:'1rem'}}>
+                                <Button variant='contained' color="error" startIcon={<YouTubeIcon/>} disabled={trailer==null} onClick={openTrailer} sx={{marginRight:'2rem'}}>{trailer!=null?"Watch Trailer":"No Trailer Available"}</Button>
+                                </DialogActions>
+                            </Dialog>
                         </div>
                         <Pagination count={totalPages} page={currPage} size="large" showFirstButton showLastButton shape="rounded" sx={{ justifyContent: "center", display: 'flex', marginBottom: '1rem' }}
                             onChange={(event, value) => setCurrPage(value)} color="primary" />
