@@ -34,6 +34,9 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import default_dp from '../Icons/default_dp.jpg'
+import posterna from '../Icons/posterna.jpg'
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -122,6 +125,7 @@ export default function Body() {
     const [cast, setCast] = useState([]);
     const [watchpro, setWatchpro] = useState([]);
     const [recommendation , setRecommendation] = useState([]);
+    const [favorites,setFavorites] = useState([])
 
     let genreMovIds = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-fi', 10770: 'TV', 53: 'Thriller', 10752: 'War', 37: 'Western' };
     let genreTvIds = { 10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids', 9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western' };
@@ -134,16 +138,21 @@ export default function Body() {
         },
         desktop: {
             breakpoint: { max: 3000, min: 900 },
-            items: 5,
-            slidesToSlide:4
+            items: 6,
+            slidesToSlide:5
         },
         tablet: {
-            breakpoint: { max: 900, min: 580 },
+            breakpoint: { max: 900, min: 700 },
+            items: 4,
+            slidesToSlide:3
+        },
+        middle:{
+            breakpoint: { max: 700, min: 563 },
             items: 3,
             slidesToSlide:2
         },
         mobile: {
-            breakpoint: { max: 580, min: 0 },
+            breakpoint: { max: 563 , min: 0 },
             items: 2,
             slidesToSlide:2
         }
@@ -194,6 +203,12 @@ export default function Body() {
             behavior: "smooth"
         })
     }, [currPage])
+
+    useEffect(()=>{
+        let fav = JSON.parse(localStorage.getItem('fav') || "[]")
+        fav = fav.map((m) => m.id)
+        setFavorites([...fav])
+    },[])
 
     const handleAddDialog = async (e) => {
         if (!e.target.checked) {
@@ -257,15 +272,29 @@ export default function Body() {
         if (recomm.length != 0){
             setRecommendation([...recomm])
         }
-        
-
-
     }
-
 
     const openTrailer = () => {
         let win = window.open(`https://www.youtube.com/watch?v=${trailer}`)
         win.focus();
+    }
+
+    const handleFav = () =>{
+        let oldData = JSON.parse(localStorage.getItem('fav') || "[]")
+        if (favorites.includes(modalObj.id)) {
+            oldData = oldData.filter((m) => m.id != modalObj.id)
+        } else {
+            oldData.push(modalObj)
+        }
+        localStorage.setItem('fav', JSON.stringify(oldData));
+        // console.log(oldData)
+        handleFavouriteState();
+    }
+
+    const handleFavouriteState = ()=>{
+        let oldData = JSON.parse(localStorage.getItem('fav') || "[]")
+        let temp = oldData.map((m) => m.id)
+        setFavorites([...temp])
     }
 
     const swipeHandlers = useSwipeable({
@@ -357,19 +386,19 @@ export default function Body() {
                             <ThemeProvider theme={theme}>
                                 {
                                     movies.map((movieObj) => (
-                                        <StyledBadge badgeContent={movieObj.vote_average ? movieObj.vote_average : "N/A"} color={movieObj.vote_average ? movieObj.vote_average > 4 ? movieObj.vote_average > 8 ? "success" : "warning" : "error" : "error"} key={movieObj.id}>
+                                        <StyledBadge badgeContent={movieObj.vote_average ? movieObj.vote_average : "N/A"} color={movieObj.vote_average ? movieObj.vote_average > 4.5 ? movieObj.vote_average > 7.4 ? "success" : "warning" : "error" : "error"} key={movieObj.id}>
                                             <Card sx={matches ? { width: 250, margin: '0.7rem' } : { width: 165, margin: '0.4rem' }}  >
                                                 <CardActionArea onClick={() => showInfoModal(movieObj)} style={{ bottom: '0rem', right: '0rem' }}>
                                                     <CardMedia
-                                                        height="300"
+                                                        height="80%"
                                                         width="100%"
                                                         component="img"
-                                                        objectFit="fill"
-                                                        image={`https://image.tmdb.org/t/p/original${movieObj.poster_path}`}
+                                                        objectfit="fill"
+                                                        image={movieObj.poster_path?`https://image.tmdb.org/t/p/original${movieObj.poster_path}`:posterna}
                                                     />
-                                                    {/* <Typography variant='h5' className='movies-title' component="div">
+                                                    {movieObj.poster_path?<></>:<Typography variant='h5' className='movies-title' component="div">
                                                         {currentTab == 0 ? movieObj.media_type == 'tv' ? `${movieObj.name}` : `${movieObj.title}` : currentTab == 1 ? movieObj.title : movieObj.name}
-                                                    </Typography> */}
+                                                    </Typography>}
 
                                                 </CardActionArea>
                                             </Card>
@@ -398,7 +427,7 @@ export default function Body() {
                                                 <tbody className='align-middle'>
                                                     <tr >
                                                         <th >Title: </th>
-                                                        <td >{mediaType == 'tv' ? `${modalObj.name}` : `${modalObj.original_title}`}</td>
+                                                        <td >{mediaType == 'tv' ? `${modalObj.name}` : `${modalObj.title}`}</td>
                                                         <td rowSpan='2' style={{ width: '33%' }} ><img src={`https://image.tmdb.org/t/p/original${modalObj.backdrop_path}`} className='modal-cover-image' alt={modalObj.title} /></td>
                                                     </tr>
                                                     <tr>
@@ -427,6 +456,7 @@ export default function Body() {
                                                             value={Math.round(modalObj.vote_average) / 2}
                                                             isHalf={true}
                                                             activeColor="#ffd700"
+                                                            style={{display:'flex'}}
                                                         /> <div style={{ marginLeft: '0.4rem', marginTop: '0.2rem' }}>{modalObj.vote_average}</div> </td>
                                                     </tr>
                                                     <tr >
@@ -439,7 +469,7 @@ export default function Body() {
                                                     </tr>
                                                     <tr>
                                                         <th>Watch Providers: </th>
-                                                        <td colSpan='2' style={{display:'flex'}}>{watchpro[0] == null ? "Currently Not Available To Stream In India" : watchpro.map((obj, index) => (<div key={index}>
+                                                        <td colSpan='2' style={{display:'flex'}}>{watchpro[0] == null ? "Currently Not Available To Stream In India" : watchpro.map((obj, index) => (<div key={index} style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
                                                             <img src={`https://image.tmdb.org/t/p/w45${obj.logo_path}`} alt={obj.provider_name} title={obj.provider_name} style={{ marginLeft: '0.3rem', marginRight: '0.3rem' }} />
                                                             <small>{obj.provider_name}</small>
                                                         </div>
@@ -476,11 +506,11 @@ export default function Body() {
                                                 {
                                                     cast.map((obj) => (
                                                         
-                                                        <Card sx={{ height: 370 }} key={obj.order} style={{marginRight:'0.5rem'}}>
+                                                        <Card sx={{ height: 320,width:'9rem' }} key={obj.order} style={{marginRight:'0.5rem'}}>
                                                             <CardMedia
                                                                 component="img"
                                                                 alt=""
-                                                                sx={{height:'14rem',width:'14rem'}}
+                                                                sx={{height:'9rem',width:'9rem'}}
 
                                                                 image={obj.profile_path == null ? default_dp : `https://image.tmdb.org/t/p/w154/${obj.profile_path}`}
                                                             />
@@ -530,12 +560,11 @@ export default function Body() {
                                                 
                                                 {
                                                     recommendation.map((obj,index) => (
-                                                        
-                                                        <Card sx={{ height: 330,marginBottom:'1rem' }} key={index} style={{marginRight:'0.5rem'}}>
+                                                        <Card sx={{ height: 320,marginBottom:'1rem',width:'9rem' }} key={index} style={{marginRight:'0.5rem'}}>
                                                             <CardMedia
                                                                 component="img"
                                                                 alt=""
-                                                                sx={{height:'14rem',width:'14rem'}}
+                                                                sx={{height:'9rem',width:'9rem'}}
 
                                                                 image={obj.poster_path == null ? default_dp : `https://image.tmdb.org/t/p/w154/${obj.poster_path}`}
                                                             />
@@ -543,13 +572,8 @@ export default function Body() {
                                                                 <Typography variant="h6" component="div" align='left'>
                                                                     {obj.media_type=='movie'?obj.title:obj.name}
                                                                 </Typography>
-                                            
                                                             </CardContent>
-
                                                         </Card>
-                                                        
-                                                       
-
                                                     ))
                                                 }
 
@@ -562,7 +586,8 @@ export default function Body() {
                                     }
                                 </DialogContent>
                                 <DialogActions sx={{ paddingTop: '1rem' }}>
-                                    <Button variant='contained' color="error" startIcon={<YouTubeIcon />} disabled={trailer == null} onClick={openTrailer} sx={{ marginRight: '2rem' }}>{trailer != null ? "Watch Trailer" : "No Trailer Available"}</Button>
+                                    <Button variant='contained' color="error" startIcon={<YouTubeIcon />} disabled={trailer == null} onClick={openTrailer} sx={matches?{ marginRight: '2rem' }:{}}>{trailer != null ? "Watch Trailer" : "No Trailer Available"}</Button>
+                                    <Button variant='contained' color="primary" startIcon={modalObj!=null?(favorites.includes(modalObj.id)) ?<FavoriteIcon />:<FavoriteBorderIcon/>:<></>}  onClick={handleFav} sx={matches?{ marginRight: '2rem' }:{}}>{modalObj!=null?(favorites.includes(modalObj.id)) ? "Remove from Favourites" : "Add To Favourites":""}</Button>
                                 </DialogActions>
                             </Dialog>
                         </div>

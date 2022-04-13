@@ -10,6 +10,12 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
+import InfoIcon from '@mui/icons-material/Info';
+import SearchIcon from '@mui/icons-material/Search';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import HomeIcon from '@mui/icons-material/Home';
+import GitHubIcon from '@mui/icons-material/GitHub';
+
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -27,6 +33,10 @@ const Navbar = () => {
         handleCloseNavMenu();
         navigate(`/${des}`)
 
+    }
+    const gotogithub = ()=>{
+        let win = window.open("https://github.com/sankalp-srivastava/movies-watchlist")
+        win.focus();
     }
 
 
@@ -85,6 +95,9 @@ const Navbar = () => {
                             <MenuItem onClick={()=>navbarredirect('about')}>
                                 <Typography textAlign="center">About</Typography>
                             </MenuItem>
+                            <MenuItem onClick={gotogithub}>
+                                <Typography textAlign="center">See Project on Github</Typography>
+                            </MenuItem>
                         </Menu>
                     </Box>
                     <Typography
@@ -96,32 +109,38 @@ const Navbar = () => {
                     >
                         Movies Watchlist App
                     </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } ,justifyContent:'flex-end',marginRight:'1rem'}}>
                         <Button
                             onClick={()=>navbarredirect('')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
-                            Home
+                            <HomeIcon/>
                         </Button>
                         <Button
                             onClick={()=>navbarredirect('favorites')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
-                            My Favorites
+                            <FavoriteIcon/>
                         </Button>
 
                         <Button
                             onClick={()=>navbarredirect('search')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
-                            Search
+                            <SearchIcon/>
                         </Button>
 
                         <Button
+                            onClick={gotogithub}
+                            sx={{ my: 2, color: 'white', display: 'block' }}
+                        ><GitHubIcon/>
+                            
+                        </Button>
+                        <Button
                             onClick={()=>navbarredirect('about')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
-                        >
-                            About
+                        ><InfoIcon/>
+                            
                         </Button>
 
                     </Box>
