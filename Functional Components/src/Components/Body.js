@@ -11,7 +11,7 @@ import TvshowIcon from '../Icons/tv-show.png'
 import axios from 'axios';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import { Button, CardActionArea } from '@mui/material';
+import { Button, CardActionArea, CardContent } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -31,6 +31,9 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import ReactStars from "react-rating-stars-component";
 import Badge from '@mui/material/Badge';
 import YouTubeIcon from '@mui/icons-material/YouTube';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import default_dp from '../Icons/default_dp.jpg'
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -84,12 +87,12 @@ const BpCheckedIcon = styled(BpIcon)({
 
 const StyledBadge = styled(Badge)({
     "& .MuiBadge-badge": {
-      color: "white",
-      padding: "0.4rem",
-      fontSize: "0.9rem",
-      top:'1.2rem',
-      right:'1.5rem',
-      textShadow:"\
+        color: "white",
+        padding: "0.4rem",
+        fontSize: "0.9rem",
+        top: '1.2rem',
+        right: '1.5rem',
+        textShadow: "\
       0.05em 0 black,\
       0 0.05em black,\
       -0.05em 0 black,\
@@ -98,9 +101,9 @@ const StyledBadge = styled(Badge)({
       -0.05em 0.05em black,\
       0.05em -0.05em black,\
       0.05em 0.05em black"
-    
+
     }
-  });
+});
 export default function Body() {
     const theme = createTheme();
     const [open, setOpen] = React.useState(false);
@@ -114,11 +117,38 @@ export default function Body() {
     const [dialogCheckBox, setDialogCheckBox] = useState([]);
     const [filterGenre, setFilterGenre] = useState([]);
     const [modalObj, setModalObj] = useState(null);
-    const [mediaType,setMediaType] = useState(null);
-    const [trailer ,setTrailer] = useState(null);
+    const [mediaType, setMediaType] = useState(null);
+    const [trailer, setTrailer] = useState(null);
+    const [cast, setCast] = useState([]);
+    const [watchpro, setWatchpro] = useState([]);
+    const [recommendation , setRecommendation] = useState([]);
 
     let genreMovIds = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-fi', 10770: 'TV', 53: 'Thriller', 10752: 'War', 37: 'Western' };
     let genreTvIds = { 10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids', 9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western' };
+    const responsive = {
+        superLargeDesktop: {
+            // the naming can be any, depends on you.
+            breakpoint: { max: 4000, min: 3000 },
+            items: 7,
+            slidesToSlide:6
+        },
+        desktop: {
+            breakpoint: { max: 3000, min: 900 },
+            items: 5,
+            slidesToSlide:4
+        },
+        tablet: {
+            breakpoint: { max: 900, min: 580 },
+            items: 3,
+            slidesToSlide:2
+        },
+        mobile: {
+            breakpoint: { max: 580, min: 0 },
+            items: 2,
+            slidesToSlide:2
+        }
+    };
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -133,6 +163,10 @@ export default function Body() {
         setOpen2(false);
         setModalObj(null)
         setTrailer(null)
+        setMediaType(null)
+        setCast([])
+        setWatchpro([])
+        setRecommendation([])
     };
 
     useEffect(() => {
@@ -149,7 +183,7 @@ export default function Body() {
             }
             const res = await axios.get(apiLink)
             let data = res.data.results
-            await setTotalPages(Math.min(res.data.total_pages,100))
+            await setTotalPages(Math.min(res.data.total_pages, 100))
             await setMovies([...data])
         }
         getMovies();
@@ -183,22 +217,53 @@ export default function Body() {
 
     const showInfoModal = async (Obj) => {
         handleClickOpen2();
-        let link =""
-        if ((currentTab==0 && Obj.media_type=='tv')|| currentTab==2){
-            link = `https://api.themoviedb.org/3/tv/${Obj.id}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos`
+        let link = ""
+        if ((currentTab == 0 && Obj.media_type == 'tv') || currentTab == 2) {
+            link = `https://api.themoviedb.org/3/tv/${Obj.id}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,credits,watch/providers,recommendations`
             await setMediaType('tv')
-        }else{
-            link = `https://api.themoviedb.org/3/movie/${Obj.id}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos`
+        } else {
+            link = `https://api.themoviedb.org/3/movie/${Obj.id}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,credits,watch/providers,recommendations`
             await setMediaType('movie')
         }
         let res = await axios.get(link)
         let data = res.data
         await setModalObj(data)
-        setTrailer((data.videos.results.filter(e=>e.type=="Trailer")[0]).key)
-       
+        if (data.videos.results.filter(e => e.type == "Trailer")[0]){
+            await setTrailer((data.videos.results.filter(e => e.type == "Trailer")[0]).key)
+        }
+        else{
+            setTrailer(null)
+        }
+        await setCast([...data.credits.cast])
+        let provider = data["watch/providers"].results.IN
+        let newa = []
+        if (provider == null) {
+            newa = [null]
+        }
+        else if ('rent' in provider) {
+            newa = JSON.parse(JSON.stringify(provider['rent']))
+        }
+        else if ('flatrate' in provider) {
+            newa = JSON.parse(JSON.stringify(provider['flatrate']))
+        }
+        else if ('buy' in provider) {
+            newa = JSON.parse(JSON.stringify(provider['buy']))
+        }
+        else {
+            newa = [null]
+        }
+        await setWatchpro([...newa])
+        let recomm = data.recommendations.results.slice(0,6)
+        if (recomm.length != 0){
+            setRecommendation([...recomm])
+        }
+        
+
+
     }
 
-    const openTrailer = ()=>{
+
+    const openTrailer = () => {
         let win = window.open(`https://www.youtube.com/watch?v=${trailer}`)
         win.focus();
     }
@@ -292,19 +357,19 @@ export default function Body() {
                             <ThemeProvider theme={theme}>
                                 {
                                     movies.map((movieObj) => (
-                                                <StyledBadge badgeContent={movieObj.vote_average?movieObj.vote_average:"N/A"} color={movieObj.vote_average?movieObj.vote_average>4?movieObj.vote_average>8?"success":"warning":"error":"error"} key={movieObj.id}>
-                                        <Card sx={matches ? { width: 250, margin: '0.7rem' } : { width: 165, margin: '0.4rem' }}  >
+                                        <StyledBadge badgeContent={movieObj.vote_average ? movieObj.vote_average : "N/A"} color={movieObj.vote_average ? movieObj.vote_average > 4 ? movieObj.vote_average > 8 ? "success" : "warning" : "error" : "error"} key={movieObj.id}>
+                                            <Card sx={matches ? { width: 250, margin: '0.7rem' } : { width: 165, margin: '0.4rem' }}  >
                                                 <CardActionArea onClick={() => showInfoModal(movieObj)} style={{ bottom: '0rem', right: '0rem' }}>
                                                     <CardMedia
                                                         height="300"
                                                         width="100%"
                                                         component="img"
-
-                                                        image={`https://image.tmdb.org/t/p/original${movieObj.backdrop_path}`}
+                                                        objectFit="fill"
+                                                        image={`https://image.tmdb.org/t/p/original${movieObj.poster_path}`}
                                                     />
-                                                    <Typography variant='h5' className='movies-title' component="div">
+                                                    {/* <Typography variant='h5' className='movies-title' component="div">
                                                         {currentTab == 0 ? movieObj.media_type == 'tv' ? `${movieObj.name}` : `${movieObj.title}` : currentTab == 1 ? movieObj.title : movieObj.name}
-                                                    </Typography>
+                                                    </Typography> */}
 
                                                 </CardActionArea>
                                             </Card>
@@ -328,63 +393,176 @@ export default function Body() {
                                 </DialogTitle>
                                 <DialogContent>
                                     {modalObj != null ?
-                                        <table className="table table-hover table-bordered" >
-                                            <tbody className='align-middle'>
-                                                <tr >
-                                                    <th >Title: </th>
-                                                    <td >{mediaType == 'tv' ? `${modalObj.name}` : `${modalObj.original_title}`}</td>
-                                                    <td rowSpan='2' style={{ width: '33%' }} ><img src={`https://image.tmdb.org/t/p/original${modalObj.backdrop_path}`} className='modal-cover-image' alt={modalObj.title} /></td>
-                                                </tr>
-                                                <tr>
-                                                    <th >Media Type: </th>
-                                                    <td >{mediaType == 'tv' ? "TV Show" : "Movie"}</td>
+                                        <div>
+                                            <table className="table table-hover table-bordered" >
+                                                <tbody className='align-middle'>
+                                                    <tr >
+                                                        <th >Title: </th>
+                                                        <td >{mediaType == 'tv' ? `${modalObj.name}` : `${modalObj.original_title}`}</td>
+                                                        <td rowSpan='2' style={{ width: '33%' }} ><img src={`https://image.tmdb.org/t/p/original${modalObj.backdrop_path}`} className='modal-cover-image' alt={modalObj.title} /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th >Media Type: </th>
+                                                        <td >{mediaType == 'tv' ? "TV Show" : "Movie"}</td>
 
-                                                </tr>
+                                                    </tr>
 
-                                                <tr >
-                                                    <th >Genre: </th>
-                                                    <td colSpan='2'>{[...modalObj.genres.map(e=>e.name)].join(",")}
-                                                    </td>
-                                                </tr>
-                                                <tr >
-                                                    <th >Overview: </th>
-                                                    <td colSpan='2' >{modalObj.overview}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>
-                                                        Rating:
-                                                    </th>
-                                                    <td colSpan='3' style={{ display: 'flex' }}> <ReactStars
-                                                        count={5}
-                                                        size={20}
-                                                        edit={false}
-                                                        value={Math.round(modalObj.vote_average) / 2}
-                                                        isHalf={true}
-                                                        activeColor="#ffd700"
-                                                    /> <div style={{ marginLeft: '0.4rem', marginTop: '0.2rem' }}>{modalObj.vote_average}</div> </td>
-                                                </tr>
-                                                <tr >
-                                                    <th >Language: </th>
-                                                    <td colSpan='2'>{(modalObj.original_language).toUpperCase()}</td>
-                                                </tr>
-                                                <tr >
-                                                    <th >{mediaType == 'tv' ? "First Air Date: " : "Release Date: "}</th>
-                                                    <td colSpan='2'>{new Date(mediaType == 'tv' ? modalObj.first_air_date : modalObj.release_date).toLocaleDateString("en-IN", { year: 'numeric', month: 'long', day: 'numeric' })}</td>
-                                                </tr>
-                                                {/* <tr>
-                                                <th>Watch Providers: </th>
-                                                <td colSpan='2'>{this.state.watchproviders[0] == null ? "Currently Not Available To Stream In India" : this.state.watchproviders.map((obj) => (<>
-                                                    <img src={`https://image.tmdb.org/t/p/w45${obj.logo_path}`} alt={obj.provider_name} title={obj.provider_name} style={{ marginLeft: '0.3rem', marginRight: '0.3rem' }} />
-                                                    <small>{obj.provider_name}</small>
-                                                </>
-                                                ))}</td>
-                                            </tr> */}
-                                            </tbody>
-                                        </table> : <CircularProgress />
+                                                    <tr >
+                                                        <th >Genre: </th>
+                                                        <td colSpan='2'>{[...modalObj.genres.map(e => e.name)].join(",")}
+                                                        </td>
+                                                    </tr>
+                                                    <tr >
+                                                        <th >Overview: </th>
+                                                        <td colSpan='2' >{modalObj.overview}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>
+                                                            Rating:
+                                                        </th>
+                                                        <td colSpan='3' style={{ display: 'flex' }}> <ReactStars
+                                                            count={5}
+                                                            size={20}
+                                                            edit={false}
+                                                            value={Math.round(modalObj.vote_average) / 2}
+                                                            isHalf={true}
+                                                            activeColor="#ffd700"
+                                                        /> <div style={{ marginLeft: '0.4rem', marginTop: '0.2rem' }}>{modalObj.vote_average}</div> </td>
+                                                    </tr>
+                                                    <tr >
+                                                        <th >Language: </th>
+                                                        <td colSpan='2'>{(modalObj.original_language).toUpperCase()}</td>
+                                                    </tr>
+                                                    <tr >
+                                                        <th >{mediaType == 'tv' ? "First Air Date: " : "Release Date: "}</th>
+                                                        <td colSpan='2'>{new Date(mediaType == 'tv' ? modalObj.first_air_date : modalObj.release_date).toLocaleDateString("en-IN", { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Watch Providers: </th>
+                                                        <td colSpan='2' style={{display:'flex'}}>{watchpro[0] == null ? "Currently Not Available To Stream In India" : watchpro.map((obj, index) => (<div key={index}>
+                                                            <img src={`https://image.tmdb.org/t/p/w45${obj.logo_path}`} alt={obj.provider_name} title={obj.provider_name} style={{ marginLeft: '0.3rem', marginRight: '0.3rem' }} />
+                                                            <small>{obj.provider_name}</small>
+                                                        </div>
+                                                        ))}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            {cast.length!=0? <div>
+                                                
+                                            <Typography variant='h5' sx={{paddingBottom:'0.5rem'}}>
+                                                Cast:
+                                            </Typography>
+                                            <Carousel
+                                                swipeable={true}
+                                                draggable={true}
+                                                showDots={false}
+                                                responsive={responsive}
+                                                ssr={false} // means to render carousel on server-side.
+                                                infinite={false}
+                                                autoPlay={false}
+                                                autoPlaySpeed={9000000}
+                                                keyBoardControl={true}
+                                                customTransition=" ease 930ms"
+                                                transitionDuration={930}
+                                                containerClass="carousel-container"
+                                                removeArrowOnDeviceType={[]}
+                                                dotListClass="custom-dot-list-style"
+                                                itemClass="carousel-item-padding-40-px"
+                                                style={{alignItems:'stretch',display:'flex'}}
+    
+                                            >
+                                            
+                                                
+                                                {
+                                                    cast.map((obj) => (
+                                                        
+                                                        <Card sx={{ height: 370 }} key={obj.order} style={{marginRight:'0.5rem'}}>
+                                                            <CardMedia
+                                                                component="img"
+                                                                alt=""
+                                                                sx={{height:'14rem',width:'14rem'}}
+
+                                                                image={obj.profile_path == null ? default_dp : `https://image.tmdb.org/t/p/w154/${obj.profile_path}`}
+                                                            />
+                                                            <CardContent>
+                                                                <Typography variant="h6" component="div" >
+                                                                    {obj.name}
+                                                                </Typography>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    {obj.character}
+                                                                </Typography>
+                                                            </CardContent>
+
+                                                        </Card>
+                                                        
+                                                       
+
+                                                    ))
+                                                }
+
+                                           
+                                            </Carousel></div>:<div></div>}
+                                            { recommendation.length!=0?
+                                            <div>
+                                            <Typography variant='h5' sx={{paddingBottom:'0.5rem',paddingTop:"0.7rem"}}>
+                                                Recommendations:
+                                            </Typography>
+                                            <Carousel
+                                                swipeable={true}
+                                                draggable={true}
+                                                showDots={false}
+                                                responsive={responsive}
+                                                ssr={false} // means to render carousel on server-side.
+                                                infinite={false}
+                                                autoPlay={false}
+                                                autoPlaySpeed={9000000}
+                                                keyBoardControl={true}
+                                                customTransition=" ease 930ms"
+                                                transitionDuration={930}
+                                                containerClass="carousel-container"
+                                                removeArrowOnDeviceType={[]}
+                                                dotListClass="custom-dot-list-style"
+                                                itemClass="carousel-item-padding-40-px"
+                                                style={{alignItems:'stretch',display:'flex'}}
+    
+                                            >
+                                            
+                                                
+                                                {
+                                                    recommendation.map((obj,index) => (
+                                                        
+                                                        <Card sx={{ height: 330,marginBottom:'1rem' }} key={index} style={{marginRight:'0.5rem'}}>
+                                                            <CardMedia
+                                                                component="img"
+                                                                alt=""
+                                                                sx={{height:'14rem',width:'14rem'}}
+
+                                                                image={obj.poster_path == null ? default_dp : `https://image.tmdb.org/t/p/w154/${obj.poster_path}`}
+                                                            />
+                                                            <CardContent>
+                                                                <Typography variant="h6" component="div" align='left'>
+                                                                    {obj.media_type=='movie'?obj.title:obj.name}
+                                                                </Typography>
+                                            
+                                                            </CardContent>
+
+                                                        </Card>
+                                                        
+                                                       
+
+                                                    ))
+                                                }
+
+                                           
+                                            </Carousel>
+                                            </div>
+                                            :<div></div>}
+
+                                        </div> : <CircularProgress />
                                     }
                                 </DialogContent>
-                                <DialogActions sx={{paddingTop:'1rem'}}>
-                                <Button variant='contained' color="error" startIcon={<YouTubeIcon/>} disabled={trailer==null} onClick={openTrailer} sx={{marginRight:'2rem'}}>{trailer!=null?"Watch Trailer":"No Trailer Available"}</Button>
+                                <DialogActions sx={{ paddingTop: '1rem' }}>
+                                    <Button variant='contained' color="error" startIcon={<YouTubeIcon />} disabled={trailer == null} onClick={openTrailer} sx={{ marginRight: '2rem' }}>{trailer != null ? "Watch Trailer" : "No Trailer Available"}</Button>
                                 </DialogActions>
                             </Dialog>
                         </div>
