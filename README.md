@@ -7,9 +7,10 @@ A React App which shows trending movies and Tv show and information related to t
 -  React Router DOM
 -  React Bootstrap
 -  Bootstrap 5
--  Axois
--  React Rating Star Component
+-  Axois etc.
 
 
 ## Deployed At:
-  The site is deployed at https://movies-wishlist.netlify.app/
+  The site is deployed at 
+- Class Component : https://movies-wishlist.netlify.app/
+- Functional Component : https://movieswatchlistapp.netlify.app/
