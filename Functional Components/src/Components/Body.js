@@ -11,7 +11,7 @@ import TvshowIcon from '../Icons/tv-show.png'
 import axios from 'axios';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import { Button, CardActionArea, CardContent } from '@mui/material';
+import { Button, CardActionArea, CardContent, TablePagination } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -87,6 +87,8 @@ const BpCheckedIcon = styled(BpIcon)({
         backgroundColor: '#106ba3',
     },
 });
+
+
 
 const StyledBadge = styled(Badge)({
     "& .MuiBadge-badge": {
@@ -272,6 +274,7 @@ export default function Body() {
         if (recomm.length != 0){
             setRecommendation([...recomm])
         }
+        
     }
 
     const openTrailer = () => {
@@ -284,7 +287,7 @@ export default function Body() {
         if (favorites.includes(modalObj.id)) {
             oldData = oldData.filter((m) => m.id != modalObj.id)
         } else {
-            oldData.push(modalObj)
+            oldData.push({...modalObj,media_type:mediaType,trailer:trailer})
         }
         localStorage.setItem('fav', JSON.stringify(oldData));
         // console.log(oldData)
@@ -566,7 +569,7 @@ export default function Body() {
                                                                 alt=""
                                                                 sx={{height:'9rem',width:'9rem'}}
 
-                                                                image={obj.poster_path == null ? default_dp : `https://image.tmdb.org/t/p/w154/${obj.poster_path}`}
+                                                                image={obj.poster_path == null ? posterna : `https://image.tmdb.org/t/p/w154/${obj.poster_path}`}
                                                             />
                                                             <CardContent>
                                                                 <Typography variant="h6" component="div" align='left'>

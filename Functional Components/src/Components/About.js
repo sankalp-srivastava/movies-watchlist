@@ -13,6 +13,8 @@ export default function About() {
         A React App which shows trending movies and Tv show and information related to them such as Title, Genre, Rating, Original Language, Cast etc.
         You can add your likes to your favorites list just by pressing Add to Favourites. The list is stored locally on your computer,
         so it will still be present next time you visit.
+      <br/>
+      The Website has support to touch gestures on carousel and switching tabs on home page.
       </p>
       <h4 className="shadow1">
         Libraries Used <hr />
@@ -24,7 +26,7 @@ export default function About() {
         <li>Material UI</li>
         <li>Bootstrap 5</li>
         <li>Axois</li>
-        <li>React Rating Star Component</li>
+        <li>React swipeable etc.</li>
       </ul>
 
       <h4 className="shadow1">

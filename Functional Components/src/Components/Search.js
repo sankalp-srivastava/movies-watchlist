@@ -58,7 +58,7 @@ const StyledBadge = styled(Badge)({
 
 export default function Search() {
   const theme = createTheme();
-  const [searchQuery, setSeachQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [finalquery, setFinalQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -111,7 +111,7 @@ export default function Search() {
     if (favorites.includes(modalObj.id)) {
         oldData = oldData.filter((m) => m.id != modalObj.id)
     } else {
-        oldData.push(modalObj)
+        oldData.push({...modalObj,media_type:mediaType,trailer:trailer})
     }
     localStorage.setItem('fav', JSON.stringify(oldData));
     // console.log(oldData)
@@ -154,7 +154,7 @@ const handleFavouriteState = ()=>{
   const cleanup = () => {
     setLoading(false)
     setResults([])
-    setSeachQuery("")
+    setSearchQuery("")
     setFinalQuery("")
     setSearchDone(false)
     setTotalPages(0)
@@ -239,7 +239,7 @@ const handleFavouriteState = ()=>{
           sx={{ width: '100%', margin: '1.2rem' }}
           variant="outlined"
           margin="normal"
-          onChange={(e) => setSeachQuery(e.target.value)}
+          onChange={(e) => setSearchQuery(e.target.value)}
           value={searchQuery}
           onKeyPress={handleKeypress}
           InputProps={{
@@ -276,16 +276,17 @@ const handleFavouriteState = ()=>{
           </div> :
 
             <div>
-              <ThemeProvider theme={theme}>
+              <ThemeProvider theme={theme} >
                 {results.length != 0 ? <Typography gutterBottom={true} sx={{ marginLeft: '1rem' }} variant={'h5'}>Found {totalResult} Results For {finalquery}  </Typography> : <></>}
+                <div >
 
                 {
                   results.map((movieObj) => (
-                    <StyledBadge badgeContent={movieObj.vote_average ? movieObj.vote_average : "N/A"} color={movieObj.vote_average ? movieObj.vote_average > 4 ? movieObj.vote_average > 8 ? "success" : "warning" : "error" : "error"} key={movieObj.id}>
-                      <Card sx={matches ? { width: 250, margin: '0.7rem', height: 420 } : { width: 150, height: 420 }}  >
+                    <StyledBadge sx={matches?{}:{left:'1rem'}} badgeContent={movieObj.vote_average ? movieObj.vote_average : "N/A"} color={movieObj.vote_average ? movieObj.vote_average > 4 ? movieObj.vote_average > 8 ? "success" : "warning" : "error" : "error"} key={movieObj.id}>
+                      <Card sx={matches ? { width: 250, margin: '0.7rem' } : { width: 165,margin:'0.4rem'}}  >
                         <CardActionArea style={{ bottom: '0rem', right: '0rem' }} onClick={() => showInfoModal(movieObj)}>
                           <CardMedia
-                            height="320"
+                            height="80%"
                             width="100%"
                             component="img"
                             objectfit="fill"
@@ -301,6 +302,7 @@ const handleFavouriteState = ()=>{
                     </StyledBadge>
                   ))
                 }
+                </div>
               </ThemeProvider>
               <Dialog
                 open={open2}
@@ -448,7 +450,7 @@ const handleFavouriteState = ()=>{
                                     alt=""
                                     sx={{ height: '14rem', width: '14rem' }}
 
-                                    image={obj.poster_path == null ? default_dp : `https://image.tmdb.org/t/p/w154/${obj.poster_path}`}
+                                    image={obj.poster_path == null ? posterna : `https://image.tmdb.org/t/p/w154/${obj.poster_path}`}
                                   />
                                   <CardContent>
                                     <Typography variant="h6" component="div" align='left'>
