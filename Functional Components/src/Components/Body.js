@@ -37,7 +37,9 @@ import default_dp from '../Icons/default_dp.jpg'
 import posterna from '../Icons/posterna.jpg'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-
+import SortIcon from '@mui/icons-material/Sort';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -70,13 +72,42 @@ const BpIcon = styled('span')(({ theme }) => ({
     },
 }));
 
+const BpIcon2 = styled('span')(({ theme }) => ({
+    borderRadius: '50%',
+    width: 16,
+    height: 16,
+    boxShadow:
+      theme.palette.mode === 'dark'
+        ? '0 0 0 1px rgb(16 22 26 / 40%)'
+        : 'inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)',
+    backgroundColor: theme.palette.mode === 'dark' ? '#394b59' : '#f5f8fa',
+    backgroundImage:
+      theme.palette.mode === 'dark'
+        ? 'linear-gradient(180deg,hsla(0,0%,100%,.05),hsla(0,0%,100%,0))'
+        : 'linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))',
+    '.Mui-focusVisible &': {
+      outline: '2px auto rgba(19,124,189,.6)',
+      outlineOffset: 2,
+    },
+    'input:hover ~ &': {
+      backgroundColor: theme.palette.mode === 'dark' ? '#30404d' : '#ebf1f5',
+    },
+    'input:disabled ~ &': {
+      boxShadow: 'none',
+      background:
+        theme.palette.mode === 'dark' ? 'rgba(57,75,89,.5)' : 'rgba(206,217,224,.5)',
+    },
+  }));
+
 const BpCheckedIcon = styled(BpIcon)({
     backgroundColor: '#137cbd',
     backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
+    borderRadius:"50%",
     '&:before': {
         display: 'block',
         width: 16,
         height: 16,
+        
         backgroundImage:
             "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
             " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
@@ -88,6 +119,38 @@ const BpCheckedIcon = styled(BpIcon)({
     },
 });
 
+const BpCheckedIcon2 = styled(BpIcon)({
+    backgroundColor: '#137cbd',
+    backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
+    '&:before': {
+      display: 'block',
+      width: 16,
+      height: 16,
+      backgroundImage: 'radial-gradient(#fff,#fff 28%,transparent 32%)',
+      content: '""',
+    },
+    'input:hover ~ &': {
+      backgroundColor: '#106ba3',
+    },
+  });
+  
+
+function BpRadio(props) {
+    return (
+      <Radio
+        sx={{
+          '&:hover': {
+            bgcolor: 'transparent',
+          },
+        }}
+        disableRipple
+        color="default"
+        checkedIcon={<BpCheckedIcon2 />}
+        icon={<BpIcon2 />}
+        {...props}
+      />
+    );
+  }
 
 
 const StyledBadge = styled(Badge)({
@@ -113,6 +176,7 @@ export default function Body() {
     const theme = createTheme();
     const [open, setOpen] = React.useState(false);
     const [open2, setOpen2] = React.useState(false);
+    const [open3, setOpen3] = React.useState(false);
     const myRef = useRef(null)
     const matches = useMediaQuery(theme.breakpoints.up('sm'));
     const [currentTab, setCurrentTab] = useState(0);
@@ -128,9 +192,12 @@ export default function Body() {
     const [watchpro, setWatchpro] = useState([]);
     const [recommendation , setRecommendation] = useState([]);
     const [favorites,setFavorites] = useState([])
+    const [currentSort,setCurrentSort] = useState(0)
+    const [tempSort,setTempSort] = useState(0)
 
     let genreMovIds = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History', 27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Sci-fi', 10770: 'TV', 53: 'Thriller', 10752: 'War', 37: 'Western' };
     let genreTvIds = { 10759: 'Action & Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 99: 'Documentary', 18: 'Drama', 10751: 'Family', 10762: 'Kids', 9648: 'Mystery', 10763: 'News', 10764: 'Reality', 10765: 'Sci-Fi & Fantasy', 10766: 'Soap', 10767: 'Talk', 10768: 'War & Politics', 37: 'Western' };
+    const sortOrder = ["Popularity","Title (A-Z)","Title(Z-A)","Rating (High To Low)","Rating (Low To High)"]
     const responsive = {
         superLargeDesktop: {
             // the naming can be any, depends on you.
@@ -159,16 +226,29 @@ export default function Body() {
             slidesToSlide:2
         }
     };
-
+    useEffect(()=>{
+        const setDefaultVal =async()=>{
+        await setCurrentSort(0);
+        await setFilterGenre([])}
+        setDefaultVal();
+    },[currentTab])
     const handleClickOpen = () => {
         setOpen(true);
     };
     const handleClickOpen2 = () => {
         setOpen2(true);
     };
+    const handleClickOpen3 = () => {
+        setOpen3(true);
+        setTempSort(currentSort)
+    };
 
     const handleClose = () => {
         setOpen(false);
+        setDialogCheckBox([])
+    };
+    const handleClose3 = () => {
+        setOpen3(false);
     };
     const handleClose2 = () => {
         setOpen2(false);
@@ -179,6 +259,7 @@ export default function Body() {
         setWatchpro([])
         setRecommendation([])
     };
+    
 
     useEffect(() => {
         const getMovies = async () => {
@@ -187,10 +268,13 @@ export default function Body() {
                 apiLink = (`https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}`)
             }
             else if (currentTab == 1) {
-                apiLink = (`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}&with_genres=${filterGenre.join(",")}`)
+                const sortkey = ["sort_by=popularity.desc","sort_by=title.asc","sort_by=title.desc","sort_by=vote_average.desc","sort_by=vote_average.asc"]
+                apiLink = (`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}&with_genres=${filterGenre.join(",")}&vote_count.gte=50&${sortkey[currentSort]}`)
             }
+
             else {
-                apiLink = (`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}&with_genres=${filterGenre.join(",")}`)
+                const sortkey = ["sort_by=popularity.desc","sort_by=name.asc","sort_by=name.desc","sort_by=vote_average.desc","sort_by=vote_average.asc"]
+                apiLink = (`https://api.themoviedb.org/3/discover/tv?api_key=${process.env.REACT_APP_API_KEY}&page=${currPage}&with_genres=${filterGenre.join(",")}&vote_count.gte=50&${sortkey[currentSort]}`)
             }
             const res = await axios.get(apiLink)
             let data = res.data.results
@@ -198,7 +282,7 @@ export default function Body() {
             await setMovies([...data])
         }
         getMovies();
-    }, [currentTab, currPage, filterGenre])
+    }, [currentTab, currPage, filterGenre,currentSort])
 
     useEffect(() => {
         myRef.current.scrollIntoView({
@@ -226,6 +310,11 @@ export default function Body() {
     const handleClearAll = () => {
         setDialogCheckBox([])
     }
+    const handleSorting =()=>{
+        setCurrentSort(tempSort)
+        handleClose3();
+    }
+
 
     const handleFiltergenre = () => {
         setFilterGenre([...dialogCheckBox])
@@ -245,6 +334,7 @@ export default function Body() {
         let res = await axios.get(link)
         let data = res.data
         await setModalObj(data)
+        
         if (data.videos.results.filter(e => e.type == "Trailer")[0]){
             await setTrailer((data.videos.results.filter(e => e.type == "Trailer")[0]).key)
         }
@@ -336,7 +426,42 @@ export default function Body() {
                 <Tab icon={<img className="tabIcons" src={TvshowIcon} alt="" />} iconPosition="start" label="Popular TV Series" />
             </Tabs>
             <div style={{ display: 'flex', justifyContent: 'right', marginRight: '2rem', marginTop: '0.5rem' }}>
-                <Button variant="contained" startIcon={<FilterListIcon />} onClick={handleClickOpen} style={currentTab == 0 ? { display: 'none' } : {}}>Filter</Button>
+                <Button variant="contained" startIcon={<SortIcon />} onClick={handleClickOpen3} style={currentTab == 0 ? { display: 'none' } : {}}>Sort By : {sortOrder[currentSort]}</Button>
+                <Dialog
+                    open={open3}
+                    maxWidth={"md"}
+                    TransitionComponent={Transition}
+                    scroll={"paper"}
+                    onClose={handleClose3}
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle style={{ margin: '2%', padding: '0px 9px' }}>
+                        <Grid container justifyContent="space-between" alignItems="center">
+                            <Typography variant="div">Sort Order</Typography>
+                            <CloseIcon onClick={handleClose3} style={{ cursor: 'pointer' }} />
+                        </Grid>
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            <RadioGroup value={tempSort}>
+                                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 2 }} direction="row" alignItems="center">
+                                    {
+                                        sortOrder.map((key, index) => (
+                                            <Grid item xs={6} md={4} key={index} >
+                                                <FormControlLabel value={index} control={<BpRadio onClick={(e) => setTempSort(e.target.value)} />} label={key} />
+                                            </Grid>
+                                        )) 
+                                    }
+                                </Grid>
+                            </RadioGroup>
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="contained" onClick={() => {  handleClose(); }}>Cancel</Button>
+                        <Button variant="contained" onClick={handleSorting}>Apply Filter</Button>
+                    </DialogActions>
+                </Dialog>
+                <Button variant="contained" startIcon={<FilterListIcon />} onClick={handleClickOpen} style={currentTab == 0 ? { display: 'none' } : {marginLeft:'1rem'}}>Filter</Button>
                 <Dialog
                     open={open}
                     maxWidth={"lg"}
