@@ -87,7 +87,7 @@ const Navbar = () => {
                                 <Typography textAlign="center">Home</Typography>
                             </MenuItem>
                             <MenuItem onClick={()=>navbarredirect('favorites')}>
-                                <Typography textAlign="center">My Favorites</Typography>
+                                <Typography textAlign="center">My Watch List</Typography>
                             </MenuItem>
                             <MenuItem onClick={()=>navbarredirect('search')}>
                                 <Typography textAlign="center">Search</Typography>

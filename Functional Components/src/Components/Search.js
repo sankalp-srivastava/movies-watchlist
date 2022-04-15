@@ -469,7 +469,7 @@ const handleFavouriteState = ()=>{
                 </DialogContent>
                 <DialogActions sx={{ paddingTop: '1rem' }}>
                   <Button variant='contained' color="error" startIcon={<YouTubeIcon />} disabled={trailer == null} onClick={openTrailer} sx={{ marginRight: '2rem' }}>{trailer != null ? "Watch Trailer" : "No Trailer Available"}</Button>
-                  <Button variant='contained' color="primary" startIcon={modalObj != null ? (favorites.includes(modalObj.id)) ? <FavoriteIcon /> : <FavoriteBorderIcon /> : <></>} onClick={handleFav} sx={matches ? { marginRight: '2rem' } : {}}>{modalObj != null ? (favorites.includes(modalObj.id)) ? "Remove from Favourites" : "Add To Favourites" : ""}</Button>
+                  <Button variant='contained' color="primary" startIcon={modalObj != null ? (favorites.includes(modalObj.id)) ? <FavoriteIcon /> : <FavoriteBorderIcon /> : <></>} onClick={handleFav} sx={matches ? { marginRight: '2rem' } : {}}>{modalObj != null ? (favorites.includes(modalObj.id)) ? "Remove from Watch List" : "Add To My Watchlist" : ""}</Button>
                 </DialogActions>
               </Dialog>
             </div>
